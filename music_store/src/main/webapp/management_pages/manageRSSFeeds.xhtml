@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!-- RSS Feed Management page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <ui:define name="dataTableContent">
+
+                <h:form id="form">
+                    <p:growl id="messages" showDetail="true"/>
+                    <p:dataTable id="dt-rssfeeds" widgetVar="dtRssFeeds" var="rssfeed" value="#{theRssFeeds.rssFeeds}"
+                                 reflow="true" 
+                                 selection="#{theRssFeeds.selectedRssFeed}" rowKey="#{rssfeed.rssId}" paginator="true"
+                                 rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <div>
+                                <span class="table-title">
+                                    RSS Feeds
+                                </span>
+                                <span>
+                                    <p:commandButton value="Add New RssFeed" icon="pi pi-plus" 
+                                                     actionListener="#{theRssFeeds.openNew()}"
+                                                     update=":form:manage-rssfeed-content" 
+                                                     oncomplete="PF('manageRssFeedDialog').show()"
+                                                     styleClass="rounded-button ui-button-help float-right">
+                                        <p:resetInput target=":form:manage-rssfeed-content"/>
+                                    </p:commandButton>
+                                </span>
+                            </div>
+                        </f:facet>
+
+
+                        <p:column style="width:calc(20px)" headerText="ID" sortBy="#{rssfeed.rssId}" 
+                                  filterBy="#{rssfeed.rssId}" filterMatchMode="contains">
+                            <h:outputText value="#{rssfeed.rssId}" />
+                        </p:column>
+                        <p:column style="width:calc(300px)" headerText="Rss Feed Link" sortBy="#{rssfeed.link}" 
+                                  filterBy="#{rssfeed.link}" filterMatchMode="contains">
+                            <h:outputText value="#{rssfeed.link}"/>
+                        </p:column>
+
+                        <p:column style="width:calc(30px)" exportable="false" headerText="Edit" >
+                            <p:commandButton icon="pi pi-pencil" update=":form:manage-rssfeed-content"
+                                             actionListener="#{theRssFeeds.openEdit(rssfeed)}"
+                                             oncomplete="PF('manageRssFeedDialog').show()"
+                                             styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                <f:setPropertyActionListener value="#{rssfeed}" target="#{theRssFeeds.selectedRssFeed}"/>
+                                <p:resetInput target=":form:manage-rssfeed-content"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column style="width:calc(30px)" headerText="Enabled">
+                            <p:selectBooleanButton id="enabled" value="#{rssfeed.enabled}" onLabel="Yes" offLabel="No" style="width:6rem">
+                                <p:ajax update="enabled" listener="#{theRssFeeds.updateEnabled(rssfeed)}"/>
+                            </p:selectBooleanButton>
+                        </p:column>
+                    </p:dataTable>
+
+
+                    <p:dialog header="RssFeed Details" showEffect="fade" modal="true"
+                              widgetVar="manageRssFeedDialog" responsive="true" width="500px" height="200px">
+                        <p:outputPanel id="manage-rssfeed-content" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty theRssFeeds.selectedRssFeed}">
+                                <div>
+                                    <p:outputLabel for="rssfeedName" value="#{msgs.rssfeedLink}"/>
+                                    <div class="ui-inputgroup">
+                                        <span class="ui-inputgroup-addon">https://</span>
+                                        <p:inputText id="rssfeedName"  value="#{theRssFeeds.link}" 
+                                                     required="true" requiredMessage="#{msgs.rssfeedLinkRequired}"
+                                                     validator="#{theRssFeeds.validateUniqueRssFeedLink}"/>
+                                    </div>
+                                    <h:message for="rssfeedName" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="enabledStatus" value="#{msgs.enabledStatus}"/><br/>
+                                    <p:selectBooleanCheckbox value="#{theRssFeeds.selectedRssFeed.enabled}" 
+                                                             id="enabledStatus"
+                                                             itemLabel="Enabled"/>
+                                    <h:message for="enabledStatus" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                            </p:outputPanel>
+                        </p:outputPanel>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" icon="pi pi-check" actionListener="#{theRssFeeds.saveRssFeed}"
+                                             widgetVar="saveButton" onclick="PF('saveButton').disable()"
+                                             update="manage-rssfeed-content" process="manage-rssfeed-content @this"
+                                             oncomplete="PF('saveButton').enable()"/>
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageRssFeedDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </f:facet>
+                    </p:dialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+
+</html>

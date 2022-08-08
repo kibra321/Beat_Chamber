@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- Artist Management page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <ui:define name="dataTableContent">
+
+                <h:form id="form">
+                    <p:growl id="messages" showDetail="true"/>
+                    <p:dataTable id="dt-artists" widgetVar="dtArtists" var="artist" value="#{theArtists.artists}"
+                                 reflow="true" 
+                                 selection="#{theArtists.selectedArtist}" rowKey="#{artist.artistId}" paginator="true"
+                                 rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <div>
+                                <span class="table-title">
+                                    Artists
+                                </span>
+                                <span>
+                                    <p:commandButton value="Add New Artist" icon="pi pi-plus" actionListener="#{theArtists.openNew()}"
+                                                     update=":form:manage-artist-content" 
+                                                     oncomplete="PF('manageArtistDialog').show()"
+                                                     styleClass="rounded-button ui-button-help float-right">
+                                        <p:resetInput target=":form:manage-artist-content"/>
+                                    </p:commandButton>
+                                </span>
+                            </div>
+                        </f:facet>
+
+
+                        <p:column style="width:calc(20px)" headerText="ID" sortBy="#{artist.artistId}" 
+                                  filterBy="#{artist.artistId}" filterMatchMode="contains">
+                            <h:outputText value="#{artist.artistId}" />
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="Artist Name" sortBy="#{artist.artistName}" 
+                                  filterBy="#{artist.artistName}" filterMatchMode="contains">
+                            <h:outputText value="#{artist.artistName}"/>
+                        </p:column>
+                       
+
+                        <p:column style="width:calc(50px)" exportable="false" headerText="Edit" >
+                            <p:commandButton icon="pi pi-pencil" update=":form:manage-artist-content"
+                                             oncomplete="PF('manageArtistDialog').show()"
+                                             styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                <f:setPropertyActionListener value="#{artist}" target="#{theArtists.selectedArtist}"/>
+                                <p:resetInput target=":form:manage-artist-content"/>
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                    <p:dialog header="Artist Details" showEffect="fade" modal="true"
+                              widgetVar="manageArtistDialog" responsive="true" width="500px" height="200px">
+                        <p:outputPanel id="manage-artist-content" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty theArtists.selectedArtist}">
+                                <div>
+                                    <p:outputLabel for="artistName" value="#{msgs.artistName}"/>
+                                    <p:inputText id="artistName"  value="#{theArtists.selectedArtist.artistName}" 
+                                                 required="true" requiredMessage="#{msgs.artistnameRequired}"
+                                                 validator="#{theArtists.validateUniqueArtistName}"/>
+                                    <h:message for="artistName" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                            </p:outputPanel>
+                        </p:outputPanel>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" icon="pi pi-check" actionListener="#{theArtists.saveArtist}"
+                                             widgetVar="saveButton" onclick="PF('saveButton').disable()"
+                                             update="manage-artist-content" process="manage-artist-content @this"
+                                             oncomplete="PF('saveButton').enable()"/>
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageArtistDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </f:facet>
+                    </p:dialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+
+</html>

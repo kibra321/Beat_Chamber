@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!-- Management page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <ui:define name="dataTableContent">
+
+                <h:form id="form">
+                    <p:growl id="messages" showDetail="true"/>
+                    <p:dataTable id="dt-tracks" widgetVar="dtTracks" var="trackItem" value="#{theTracks.tracks}"
+                                 reflow="true" selection="#{theTracks.selectedTrack}" 
+                                 rowKey="#{trackItem.trackId}" paginator="true" 
+                                 rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <div>
+                                <span class="table-title">
+                                    Tracks
+                                </span>
+                                <span>
+                                    <p:commandButton value="Add New Track" icon="pi pi-plus" 
+                                                     actionListener="#{theTracks.openNew()}"
+                                                     process="@this"
+                                                     update=":form:manage-track-content" 
+                                                     oncomplete="PF('manageTrackDialog').show()"
+                                                     styleClass="rounded-button ui-button-help float-right">
+                                        <p:resetInput target=":form:manage-track-content"/>
+                                    </p:commandButton>
+                                </span>
+                            </div>
+                        </f:facet>
+
+
+                        <p:column style="width:calc(20px)" headerText="ID" sortBy="#{trackItem.trackId}" 
+                                  filterBy="#{trackItem.trackId}" filterMatchMode="contains">
+                            <h:outputText value="#{trackItem.trackId}" />
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="Title" sortBy="#{trackItem.trackTitle}" 
+                                  filterBy="#{trackItem.trackTitle}" filterMatchMode="contains">
+                            <h:outputText value="#{trackItem.trackTitle}"/>
+                        </p:column>
+                        <p:column style="width:calc(150px)" headerText="Album Title" sortBy="#{trackItem.albumNumber.albumTitle}"
+                                  filterBy="#{trackItem.albumNumber.albumTitle}" filterMatchMode="contains">
+                            <h:outputText value="#{trackItem.albumNumber.albumTitle}"/>
+                        </p:column>
+                        <p:column style="width:calc(30px)" headerText="Selection Number" sortBy="#{trackItem.selectionNumber}"
+                                  filterBy="#{trackItem.selectionNumber}" filterMatchMode="contains">
+                            <h:outputText value="#{trackItem.selectionNumber}" />
+                        </p:column>
+
+                        <p:column style="width:calc(100px)" headerText="Genres" sortBy="#{theTracks.getGenresListStr(trackItem)}"
+                                  filterBy="#{theTracks.getGenresListStr(trackItem)}" filterMatchMode="contains">
+                            <h:outputText value="#{theTracks.getGenresListStr(trackItem)}"/>
+                        </p:column>
+
+                        <p:column style="width:calc(100px)" headerText="Artists" sortBy="#{theTracks.getArtistsListStr(trackItem)}"
+                                  filterBy="#{theTracks.getArtistsListStr(trackItem)}" filterMatchMode="contains">
+                            <h:outputText value="#{theTracks.getArtistsListStr(trackItem)}"/>
+                        </p:column>
+
+                        <p:column style="width:calc(50px)" headerText="Total sales" sortBy="#{theTracks.getTotalSales(trackItem)}"
+                                  filterBy="#{theTracks.getTotalSales(trackItem)}" filterMatchMode="contains">
+                            <h:outputText value="#{theTracks.getTotalSales(trackItem)}"/>
+                        </p:column>
+                        <p:column style="width:calc(50px)" headerText="Removed" sortBy="#{trackItem.removed}"
+                                  filterBy="#{trackItem.removed?'Yes':'No'}" filterMatchMode="contains">
+                            <p:tag value="#{trackItem.removed?'Yes':'No'}" severity="#{trackItem.removed?'danger':'success'}" styleClass="p-mr-2"/>
+                        </p:column>
+
+                        <p:column style="width:calc(20px)" exportable="false" headerText="Edit" >
+                            <p:commandButton icon="pi pi-pencil" update=":form:manage-track-content"
+                                             oncomplete="PF('manageTrackDialog').show()"
+                                             actionListener="#{theTracks.openEdit(trackItem)}"
+                                             styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                <f:setPropertyActionListener value="#{trackItem}" target="#{theTracks.selectedTrack}"/>
+                                <p:resetInput target=":form:manage-track-content"/>
+                            </p:commandButton>
+                        </p:column>
+
+                        <p:column style="width:calc(40px)" exportable="false" headerText="Remove" >
+                            <p:commandButton class="rounded-button" icon="pi pi-trash" process="@this"
+                                             oncomplete="PF('removeTrackDialog').show()" rendered="#{!trackItem.removed}">
+                                <f:setPropertyActionListener value="#{trackItem}" target="#{theTracks.selectedTrack}"/>
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                    <p:dialog header="Track Details" showEffect="fade" modal="true"
+                              widgetVar="manageTrackDialog" responsive="true" width="500px" height="450px">
+                        <p:outputPanel id="manage-track-content" class="ui-fluid">
+
+                            <p:outputPanel rendered="#{not empty theTracks.selectedTrack}">
+                                <div>
+                                    <p:outputLabel for="trackTitle" value="#{msgs.trackTitle}"/>
+                                    <p:inputText id="trackTitle"  value="#{theTracks.selectedTrack.trackTitle}" 
+                                                 required="true" requiredMessage="#{msgs.trackTitleRequired}"/>
+                                    <h:message for="trackTitle" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="removalStatus" value="#{msgs.removalStatus}"/><br/>
+                                    <p:selectBooleanCheckbox value="#{theTracks.isRemoved}" id="removalStatus"
+                                                             itemLabel="Removed">
+                                    </p:selectBooleanCheckbox>
+                                    <h:message for="removalStatus" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <p:outputPanel id="manage-image-content" rendered="#{not empty theTracks.selectedTrack}">
+                                    <div>
+                                        <p:outputLabel for="albumTitle" value="#{msgs.albumTitle}"/>
+                                        <p:selectOneMenu id="albumTitle" value="#{theTracks.selectedAlbum}"
+                                                         required="true" requiredMessage="#{msgs.chooseAlbum}"
+                                                         converter="AlbumConverter" >
+                                            <f:selectItem itemValue="" itemLabel="Select the Album..." noSelectionOption="true"/>
+                                            <f:selectItems value="#{theTracks.allAlbums}" var="allAlbums"
+                                                           itemLabel="#{allAlbums.albumTitle}"
+                                                           itemValue="#{allAlbums}"/>
+                                            <f:ajax /> 
+                                        </p:selectOneMenu>
+                                        <h:message for="albumTitle" styleClass="errorMessage" style="color:red"/>
+                                    </div>
+                                    <p:outputPanel rendered="#{not empty theTracks.selectedAlbum.albumNumber}">
+                                        <div>
+                                            <p:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(theTracks.selectedAlbum.albumNumber, true)}" styleClass="album-img-small"/>
+                                        </div>
+                                    </p:outputPanel>
+                                </p:outputPanel>
+                                <div>
+                                    <p:outputLabel for="genreList1" value="#{msgs.genre}"/>
+                                    <p:selectCheckboxMenu id="genreList1" value="#{theTracks.selectedGenres}" 
+                                                          label="Choose Genres..." style="min-width: 15rem"
+                                                          multiple="true" filter="true" filterMatchMode="startsWith" panelStyle="width: 30rem" scrollHeight="250"
+                                                          required="true" requiredMessage="#{msgs.genreRequired}">
+                                        <f:selectItems value="#{theTracks.allGenres}" var="allgenres"
+                                                       itemLabel="#{allgenres.genreName}"
+                                                       itemValue="#{allgenres.genreId}"/>
+                                    </p:selectCheckboxMenu>
+                                    <h:message for="genreList1" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+                                <div>
+                                    <p:outputLabel for="artistList1" value="#{msgs.artist}"/>
+                                    <p:selectCheckboxMenu id="artistList1" value="#{theTracks.selectedArtists}" 
+                                                          label="Choose Artists..." style="min-width: 15rem"
+                                                          multiple="true" filter="true" filterMatchMode="startsWith" panelStyle="width: 30rem" scrollHeight="250"
+                                                          required="true" requiredMessage="#{msgs.artistRequired}">
+                                        <f:selectItems value="#{theTracks.allArtists}" var="allartists"
+                                                       itemLabel="#{allartists.artistName}"
+                                                       itemValue="#{allartists.artistId}"/>
+                                    </p:selectCheckboxMenu>
+                                    <h:message for="artistList1" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="trackCostPrice" value="#{msgs.costPrice}"/>
+                                    <div class="ui-inputgroup">
+                                        <span class="ui-inputgroup-addon">$</span>
+                                        <p:spinner id="trackCostPrice" value="#{theTracks.selectedTrack.costPrice}" stepFactor="0.25" min="0"/>
+                                    </div>
+                                    <h:message for="trackCostPrice" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="trackListPrice" value="#{msgs.listPrice}"/>
+                                    <div class="ui-inputgroup">
+                                        <span class="ui-inputgroup-addon">$</span>
+                                        <p:spinner id="trackListPrice" value="#{theTracks.selectedTrack.listPrice}" stepFactor="0.25" min="0"/>
+                                    </div>
+                                    <h:message for="trackListPrice" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="trackSalePrice" value="#{msgs.salePrice}"/>
+                                    <div class="ui-inputgroup">
+                                        <span class="ui-inputgroup-addon">$</span>
+                                        <p:spinner id="trackSalePrice" value="#{theTracks.selectedTrack.salePrice}" stepFactor="0.25" min="0">
+                                            <f:validator validatorId="SalePriceValidator" />
+                                            <f:attribute name="listedPrice" value="form:trackListPrice"/>
+                                        </p:spinner>
+                                    </div>
+                                    <h:message for="trackSalePrice" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+
+                            </p:outputPanel>
+                        </p:outputPanel>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" icon="pi pi-check" actionListener="#{theTracks.saveTrack()}"
+                                             widgetVar="saveButton" onclick="PF('saveButton').disable()"
+                                             update="manage-track-content" process="manage-track-content @this"
+                                             oncomplete="PF('saveButton').enable()"/>
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageTrackDialog').hide()"
+                                             class="ui-button-secondary">
+                            </p:commandButton>
+                        </f:facet>
+                    </p:dialog>
+
+
+                    <p:confirmDialog widgetVar="removeTrackDialog" showEffect="fade" width="300"
+                                     message="Remove the track?" header="Confirm" severity="warn">
+                        <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{theTracks.removeTrack}"
+                                         process="@this" oncomplete="PF('removeTrackDialog').hide()"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                         onclick="PF('removeTrackDialog').hide()"/>
+                    </p:confirmDialog>
+
+                    <p:confirmDialog global="true" showEffect="fade" width="300">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+                                         icon="pi pi-check"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                         icon="pi pi-times"/>
+                    </p:confirmDialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

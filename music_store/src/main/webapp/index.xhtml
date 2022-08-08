@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!-- Front page of the website. Also acts as the welcome page. @Author Susan Vuu - 1735488 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css"/>
+        <title>#{msgs.homePage}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="templates/master_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="content">
+                #{cookies.removeItemsInCartThatAreAlreadyOrdered(theLoginRegister.client.clientNumber)}
+                <h:form>
+                    <p:growl id="growl" showDetail="true" sticky="true" />
+                    <!-- Recommended section. Will be used for cookies -->
+                    <section class="recommended">
+                        <h2 class="main-title">#{msgs.welcomeGreeting}</h2>
+                        <p class="album-description">#{msgs.recommendedDesc}</p>
+                        <div class="recommended-list">
+                            <p:repeat value="#{album.recommendAlbums()}" var="recommendedAlbums">
+                                <div class="recommended-album">
+                                    <h:commandLink action="#{album.sendAlbum(recommendedAlbums.albumNumber)}">
+                                        <f:param name="albumId" value="#{recommendedAlbums.albumNumber}"/>
+                                        <p:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(recommendedAlbums.albumNumber, true)}" styleClass="album-img-small"/>
+                                        <p>#{albumsJpaController.findAlbums(recommendedAlbums.albumNumber).albumTitle}</p>
+                                        <p>#{albumsJpaController.getAlbumArtist(recommendedAlbums.albumNumber).artistName}</p>
+                                    </h:commandLink>
+                                </div>
+                            </p:repeat>
+                        </div>
+                    </section>
+                    <!-- Recent Music -->
+                    <section>
+                        <div class="album-section" id="album-genre">
+                            <h2 class="genre-title">#{msgs.recent}</h2>
+                            <p class="album-description">#{msgs.recentDesc}</p>
+                        </div>
+                        <div class="album-section" id="album-list">
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(21)}">
+                                    <f:param name="albumId" value="21"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(21, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(21).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(21).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(4)}">
+                                    <f:param name="albumId" value="4"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(4, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(4).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(4).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(6)}">
+                                    <f:param name="albumId" value="6"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(6, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(6).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(6).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </section>
+                    <!-- List of albums -->
+                    <section>
+                        <div class="album-section" id="album-genre">
+                            <h2 class="genre-title">#{msgs.classical}</h2>
+                            <p class="album-description">#{msgs.classicalDesc}</p>
+                        </div>
+                        <div class="album-section" id="album-list">
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(21)}">
+                                    <f:param name="albumId" value="21"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(21, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(21).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(21).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(22)}">
+                                    <f:param name="albumId" value="22"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(22, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(22).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(22).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(20)}">
+                                    <f:param name="albumId" value="20"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(20, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(20).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(20).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="see-more-container right">
+                                <h:commandLink action="#{search.findAlbumsByGenre}">
+                                    <f:param name="genre" value="Classical"/>
+                                    <p:button value="#{msgs.seeMore}"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="album-section" id="album-genre">
+                            <h2 class="genre-title">#{msgs.hipHop}</h2>
+                            <p class="album-description">#{msgs.hipHopDesc}</p>
+                        </div>
+                        <div class="album-section" id="album-list">
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(4)}">
+                                    <f:param name="albumId" value="4"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(4, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(4).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(4).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(2)}">
+                                    <f:param name="albumId" value="2"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(2, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(2).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(2).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(1)}">
+                                    <f:param name="albumId" value="1"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(1, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(1).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(1).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="see-more-container right">
+                                <h:commandLink action="#{search.findAlbumsByGenre}">
+                                    <f:param name="genre" value="Hip Hop"/>
+                                    <p:button value="#{msgs.seeMore}"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="survey-and-rss">
+                        <!-- Vertical ad -->
+                        <div class="left-ad-display">
+                            <h:outputLink value="#{adsJpaController.getAdLink(6)}" target="_blank">
+                                <h:graphicImage library="images" name="#{adsJpaController.getAdPath(6)}" styleClass="ad"/>
+                            </h:outputLink>
+                        </div>
+                        <!-- Survey display -->
+                        <div class="survey-display">
+                            <p:outputLabel value="#{surveyBean.survey.title}" rendered="#{surveyBean.survey != null}"/>
+                            <p:selectOneRadio value="#{surveyBean.selectedChoice}" rendered="#{surveyBean.survey != null}">
+                                <f:selectItems value="#{surveyBean.surveyChoices}" var="surveyChoice" itemLabel="#{surveyChoice.choiceName} - #{surveyChoice.votes}"/>
+                            </p:selectOneRadio>
+                            <p:commandButton id="completeSurvey" value="#{msgs.vote}" action="#{surveyBean.voteSurvey()}" update="growl" rendered="#{surveyBean.survey != null}"/>
+                        </div>
+                        <div class="rss-display flow-root">
+                            <p:feedReader value="#{rssFeedsJpaController.randomRssFeed}" var="feed" size="3">
+                                <h:outputLink value="#{feed.link}" styleClass="rss-title">#{feed.title}</h:outputLink>
+                                <h:outputText value="#{feed.description.value}" escape="false"/>
+                                <p:divider/>
+                                <f:facet name="error">
+                                    <h:outputText value="Error reading RSS Feed" style="color:red;"/>
+                                </f:facet>
+                            </p:feedReader>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="album-section" id="album-genre">
+                            <h2 class="genre-title">#{msgs.jazz}</h2>
+                            <p class="album-description">#{msgs.jazzDesc}</p>
+                        </div>
+                        <div class="album-section" id="album-list">
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(16)}">
+                                    <f:param name="albumId" value="16"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(16, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(16).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(16).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(17)}">
+                                    <f:param name="albumId" value="17"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(17, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(17).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(17).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(19)}">
+                                    <f:param name="albumId" value="19"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(19, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(19).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(19).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="see-more-container right">
+                                <h:commandLink action="#{search.findAlbumsByGenre}">
+                                    <f:param name="genre" value="Jazz"/>
+                                    <p:button value="#{msgs.seeMore}"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="album-section" id="album-genre">
+                            <h2 class="genre-title">#{msgs.movieSoundtracks}</h2>
+                            <p class="album-description">#{msgs.movieSoundtracksDesc}</p>
+                        </div>
+                        <div class="album-section" id="album-list">
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(11)}">
+                                    <f:param name="albumId" value="11"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(11, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(11).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(11).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(14)}">
+                                    <f:param name="albumId" value="14"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(14, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(14).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(14).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(15)}">
+                                    <f:param name="albumId" value="15"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(15, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(15).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(15).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="see-more-container right">
+                                <h:commandLink action="#{search.findAlbumsByGenre}">
+                                    <f:param name="genre" value="Movie Soundtracks"/>
+                                    <p:button value="#{msgs.seeMore}"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </section>
+                    <section>
+                        <div class="album-section" id="album-genre">
+                            <h2 class="genre-title">#{msgs.rock}</h2>
+                            <p class="album-description">#{msgs.rockDesc}</p>
+                        </div>
+                        <div class="album-section" id="album-list">
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(6)}">
+                                    <f:param name="albumId" value="6"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(6, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(6).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(6).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(8)}">
+                                    <f:param name="albumId" value="8"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(8, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(8).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(8).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="album-display-small">
+                                <h:commandLink action="#{album.sendAlbum(10)}">
+                                    <f:param name="albumId" value="10"/>
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(10, true)}" styleClass="album-img-small"/>
+                                    <p>#{albumsJpaController.findAlbums(10).albumTitle}</p>
+                                    <p>#{albumsJpaController.getAlbumArtist(10).artistName}</p>
+                                </h:commandLink>
+                            </div>
+                            <div class="see-more-container right">
+                                <h:commandLink action="#{search.findAlbumsByGenre}">
+                                    <f:param name="genre" value="Rock"/>
+                                    <p:button value="#{msgs.seeMore}"/>
+                                </h:commandLink>
+                            </div>
+                        </div>
+                    </section>
+                </h:form>
+                <h:form>
+                    <!-- Horizontal ad -->
+                    <section id="lower-ad">
+                        <h:outputLink value="#{adsJpaController.getAdLink(1)}" target="_blank">
+                            <h:graphicImage library="images" name="#{adsJpaController.getAdPath(1)}" styleClass="ad"/>
+                        </h:outputLink>
+                    </section>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

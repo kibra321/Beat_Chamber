@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- login page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <title>#{msgs.login}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="templates/master_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="content">
+
+                <section class="container-loginpage">
+                    <div class="container-login">
+                        <h:form>
+                            <h:outputLabel class="login-title" value="#{msgs.titlelogin}"/>
+                            <div>
+                                <h:inputText  class="login-input" id="username" 
+                                              value="#{theLoginRegister.username}" a:placeholder="Username/Email"/>
+                                <h:inputSecret class="login-input" id="password" 
+                                               value="#{theLoginRegister.password}" a:placeholder="Password"/>
+                                <h:messages />
+                                <h:commandButton id="button" value="#{msgs.login}" class="loginButton"
+                                                 action="#{theLoginRegister.doLogin}"/>
+                            </div>
+                            <div>
+                                 <h:outputLabel value="#{msgs.createAccount}"/>
+                                 <h:link id="redirectToSignupId" outcome="redirectToSignup" value="#{msgs.register}" />
+                            </div>
+                            
+                        </h:form>
+                    </div>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

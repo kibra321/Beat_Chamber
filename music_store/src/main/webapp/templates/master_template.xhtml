@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- Base template of the html pages @Author Susan Vuu - 1735488 -->
+<html xmlns = "http://www.w3.org/1999/xhtml"   
+      xmlns:h = "http://java.sun.com/jsf/html"
+      xmlns:ui = "http://java.sun.com/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <f:view locale="#{localeChanger.locale}">
+        <h:head>
+            <title>#{msgs.pageMainTitle}</title>
+            <h:outputStylesheet library="styles" name="main.css"/>
+            <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        </h:head>
+        <h:body> 
+            <div>
+                <ui:insert name = "header" >
+                    <ui:include src = "/templates/header_and_navbar.xhtml" />
+                </ui:insert> 
+            </div>
+            <div>
+                <ui:insert name = "content" ></ui:insert>
+            </div>
+            <div>
+                <ui:insert name = "footer" >
+                    <ui:include src = "/templates/footer.xhtml" />
+                </ui:insert>
+            </div>
+        </h:body>
+    </f:view>
+</html>

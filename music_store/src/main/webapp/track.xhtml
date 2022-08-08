@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Designed by Korjon Chang-Jones -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css"/>
+        <title>Track Page</title>
+    </h:head>
+    <h:body>
+        <header>
+            <h:graphicImage library="images" name="UPDATED_BeatChamberLogo.png" styleClass="main-icon"/>
+        </header>
+
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+
+                <section id="track-section">
+
+                    <!-- Display for the track cover -->
+                    <div id="track-display">
+
+                        <div id="photoshoot-ad-wrapper">
+                            <div id="photo-ad">
+                                <h:graphicImage library="images" name="photoshoot.gif" width="200" height="360"/>
+                            </div>
+                        </div>
+
+                        <h:form>
+                            <div id="image-wrapper">
+                                <h:graphicImage id="track-img" library="images" name="#{albumsJpaController.getAlbumPath(album.albumId, false)}" width="320" height="320"/> 
+                                <p id="track-title">#{tracks.trackTitle}</p>
+                                <p:rating readonly="true" value="#{tracks.rating}"/>
+
+                                <p>$ #{tracks.tracksPrice}</p>
+
+                                <p:audio  value="/audio/the_sources_snippet.mp3" player="mp3" controls="true"/>
+                            </div>
+                        </h:form>
+                    </div>
+
+                    <!-- List of other tracks in the album -->
+                    <div id="track-content">
+                        <div id="content-wrapper">
+                            <ol>
+                                <c:forEach var="trackItem" items="#{tracks.trackList}">
+                                    <li class="track-content-title">
+                                        <div class="song-item">
+                                            <h:form>
+                                                <h:commandLink action="#{tracks.sendTrack}">
+                                                    <f:param name="trackId" value="#{trackItem.trackId}"/>
+                                                    <p>#{trackItem.trackTitle}</p>
+                                                </h:commandLink> 
+                                            </h:form>
+                                            <p:commandButton icon="pi pi-shopping-cart" value="#{cookies.adjustDisplayForTracks(trackItem.trackId, msgs.addToCart, theLoginRegister.client.clientNumber)}" action="#{cookies.addTrackToCart(trackItem.trackId)}"
+                                                             rendered="#{tracks.trackId != trackItem.trackId}" disabled="#{cookies.shouldTheAddToCartBeDisabledForTracks(trackItem.trackId, theLoginRegister.client.clientNumber)}" />
+                                        </div>
+                                    </li>
+                                </c:forEach>
+                            </ol>
+                        </div>
+                    </div>
+                    <!-- Button to add the displayed track to cart -->
+                    <p:commandButton icon="pi pi-shopping-cart" value="#{cookies.adjustDisplayForTracks(tracks.trackId, msgs.addToCart, theLoginRegister.client.clientNumber)}" action="#{cookies.addTrackToCart(tracks.trackId)}" disabled="#{cookies.shouldTheAddToCartBeDisabledForTracks(tracks.trackId, theLoginRegister.client.clientNumber)}"/>
+                    <hr />
+                    <p class="item-extra">#{msgs.otherViewed}</p>
+                    <!-- Everything past the track list -->
+                    <!-- Items similar to the track being viewed -->
+                    <div id="viewed-items-container">
+                        <c:forEach var="albumItem" items="#{album.similarAlbums}">
+                            <div class="album-cover-group">
+                                <div>
+                                    <!-- making the image a link -->
+                                    <h:form>
+                                        <h:commandLink action="#{album.sendAlbum(albumItem.albumNumber)}">
+                                            <f:param name="albumId" value="#{albumItem.albumNumber}"/>
+
+                                            <h:graphicImage
+                                                library="images"
+                                                name="#{albumsJpaController.getAlbumPath(albumItem.albumNumber, false)}"
+                                                width="270"
+                                                height="270"
+                                                />
+                                        </h:commandLink>
+                                    </h:form>
+                                </div>
+                                <!-- Making the text a link -->
+                                <h:form>
+                                    <h:commandLink value="#{albumItem.albumTitle}" action="#{album.sendAlbum(albumItem.albumNumber)}">
+                                        <f:param name="albumId" value="#{albumItem.albumNumber}"/>
+                                    </h:commandLink>
+                                </h:form>
+                            </div>
+                        </c:forEach>    
+                    </div>
+
+                    <hr id="review-separator" />
+                    <p class="item-extra">#{msgs.custReviews}</p>
+                    <div id="reviewContainer">
+                        <c:forEach var="review" items="#{customerReviews.trackReviews}">
+                            <div class="review-container">
+                                <p class="review-client-name">-#{review.clientNumber.firstName} #{review.clientNumber.lastName}</p>
+                                <p:rating readonly="true" value="#{review.rating}"/>
+                                <p class="review-text">#{review.reviewText}</p>
+                                <hr/>
+                            </div>
+
+                        </c:forEach>
+                    </div>
+                    <h:panelGroup rendered="#{customerReviews.emptyTrackReviewsList}">
+                        <p>#{msgs.noReviews}</p>
+                    </h:panelGroup>
+                    <h:form>
+                        <p:commandButton value="#{msgs.addReview}" actionListener="#{tracks.reviewRedirect()}"/>
+                    </h:form>
+                    <div id="anime-ad-wrapper">
+                        <a
+                            href="https://www.crunchyroll.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >
+                            <h:graphicImage id="anime-ad" library="images" name="#{adsJpaController.getAdPath(1)}" />
+                        </a>
+                    </div>
+                </section>
+
+            </ui:define>
+        </ui:composition>
+        <div>
+
+            <ui:insert name="footer">
+                <ui:include src="/templates/footer.xhtml"/>
+            </ui:insert>
+        </div>
+    </h:body>     
+</html>

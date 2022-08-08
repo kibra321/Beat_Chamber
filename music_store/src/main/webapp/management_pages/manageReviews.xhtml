@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This page will be used by the manager to approve the reviews
+By Massimo Di Girolamo
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="dataTableContent">
+
+                <h:form id="form">                  
+
+                    <p:dataTable id="dt-customerReviews" widgetVar="dtCustomerReviews" var="customerReview" value="#{reviewBackingBean.customerReviews}"
+                                 reflow="true" 
+                                 selection="#{reviewBackingBean.selectedCustomerReviews}" rowKey="#{customerReview.reviewNumber}" paginator="true"
+                                 rows="10" rowSelectMode="add" paginatorPosition="bottom"
+                                 filteredValue="#{reviewBackingBean.filteredCustomerReviewList}">
+
+                        <p:growl id="messages" />
+                        <f:facet name="header">
+                            <div>
+                                <span class="table-title">
+                                    Customer Reviews
+                                </span>
+                            </div>
+                        </f:facet>
+
+                        <p:column style="width:calc(20px)" headerText="#{msgs.managerRevId}" sortBy="#{customerReview.reviewNumber}" 
+                                  filterBy="#{customerReview.reviewNumber}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReview.reviewNumber}" />
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="#{msgs.managerRevDate}" sortBy="#{customerReview.reviewDate}" 
+                                  filterBy="#{customerReview.reviewDate}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReview.reviewDate}"/>
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="#{msgs.managerRevRating}" sortBy="#{customerReview.rating}"
+                                  filterBy="#{customerReview.rating}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReview.rating}"/>
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="#{msgs.managerRevText}" sortBy="#{customerReview.reviewText}"
+                                  filterBy="#{customerReview.reviewText}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReview.reviewText}"/>
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="#{msgs.managerRevClient}" sortBy="#{customerReview.clientNumber.clientNumber}"
+                                  filterBy="#{customerReview.clientNumber.clientNumber}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReview.clientNumber.clientNumber}"/>
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="Track ID" sortBy="#{customerReview.trackId.trackId}"
+                                  filterBy="#{customerReview.trackId.trackId}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReview.trackId.trackId}"/>
+                        </p:column>
+                        
+                        <p:column style="width:calc(100px)" headerText="#{msgs.managerRevTrack}" sortBy="#{customerReview.trackId.trackId}"
+                                  filterBy="#{customerReview.trackId.trackId}" filterMatchMode="contains">
+                            <h:outputText value="#{customerReviews.returnTrackName(customerReview.trackId.trackId)}"/>
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="#{msgs.manageRevApprovStat}">
+                            <h:outputText value="#{customerReview.approvalStatus}" 
+                                          style=" border-radius: 7px;border: 3px solid #1a75ff;padding: 5px;width: 10px;height: 15px;"/>
+
+                            <p:commandButton value="#{msgs.manageChangeRevApprovStat}" 
+                                             actionListener="#{reviewBackingBean.changeReviewApproval(customerReview)}"
+                                             oncomplete="PF('ApprovalStatusDialog').show()"/>  
+                        </p:column>
+                    </p:dataTable>
+
+
+                    <p:confirmDialog widgetVar="ApprovalStatusDialog" showEffect="fade" width="300"
+                                     message="#{msgs.manageStatChang}" header="Confirm">
+                        <p:commandButton value="Okay" icon="pi pi-check" actionListener="#{reviewBackingBean.reloadManagerReviewPage()}"
+                                         oncomplete="PF('ApprovalStatusDialog').hide()"/>
+                    </p:confirmDialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

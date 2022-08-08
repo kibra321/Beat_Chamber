@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+  <!-- Define Persistence Unit -->
+  <persistence-unit name="music_store_persistence" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>java:app/jdbc/CSgb1w21</jta-data-source>
+    <class>com.beatchamber.entities.Tracks</class>
+    <class>com.beatchamber.entities.GenreToTracks</class>
+    <class>com.beatchamber.entities.InvoiceDetails</class>
+    <class>com.beatchamber.entities.ArtistsToTracks</class>
+    <class>com.beatchamber.entities.CustomerReviews</class>
+    <class>com.beatchamber.entities.Ads</class>
+    <class>com.beatchamber.entities.Genres</class>
+    <class>com.beatchamber.entities.GenreToAlbum</class>
+    <class>com.beatchamber.entities.Artists</class>
+    <class>com.beatchamber.entities.RssFeeds</class>
+    <class>com.beatchamber.entities.Albums</class>
+    <class>com.beatchamber.entities.Invoices</class>
+    <class>com.beatchamber.entities.ArtistAlbums</class>
+    <class>com.beatchamber.entities.SurveyToChoice</class>
+    <class>com.beatchamber.entities.Clients</class>
+    <class>com.beatchamber.entities.Surveys</class>
+    <class>com.beatchamber.entities.Choices</class>
+    <class>com.beatchamber.entities.Provinces</class>
+    <class>com.beatchamber.entities.Orders</class>
+    <class>com.beatchamber.entities.OrderTrack</class>
+    <class>com.beatchamber.entities.OrderAlbum</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="eclipselink.logging.level.sql" value="FINE"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+    </properties>
+  </persistence-unit>
+</persistence>

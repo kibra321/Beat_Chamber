@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!-- Browse Music page, will also serve as the search results page @Author Susan Vuu - 1735488 | Korjon Chang-Jones -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>#{msgs.browseMusic}</title>
+        <h:outputStylesheet library="styles" name="main.css"/>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                <section class="album-list-title">
+                    <h1>Search Results</h1>
+                </section>
+                <h:panelGroup rendered="#{search.isEmptyList()}">
+                    <div id="no-results-container">
+                    <h:panelGroup id="no-results-container-span" >
+                        <h2 id="browse-no-results">#{msgs.noResults}</h2>
+                    </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+                <!-- PrimeFaces's DataView to display all the current albums -->
+                <h:form rendered="#{search.albumComponents.size() > 0}">
+                    <h1>#{msgs.albums}</h1>
+                    <p:dataView var="musicItem" value="#{search.albumComponents}" 
+                                multiViewState="true" gridIcon="pi pi-th-large" listIcon="pi pi-bars">
+                        <!-- Grid View -->
+                        <p:dataViewGridItem>
+                            <div class="album-grid-display">
+                                <h:commandLink action="#{search.sendComponentPage}">
+                                    <f:setPropertyActionListener 
+                                        target = "#{search.sendComponent}" value = "#{musicItem}" />
+                                    <p:graphicImage name="#{musicItem.coverPath}" library="images" styleClass="album-grid-img"/>
+                                    <div class="album-grid-info">
+                                        <div>#{musicItem.title}</div>
+                                        <div>#{musicItem.artists}</div>
+                                        <c:forEach var="artist" items="#{musicItem.getArtists()}" >
+                                            <div>#{artist.artistName}</div>
+                                        </c:forEach>
+                                    </div>
+                                </h:commandLink>
+                                <h:form class="album-rating">
+                                    <p:rating readonly="true" value="4"/>
+                                </h:form>
+                                <h:outputText value="#{musicItem.price}" styleClass="album-price">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                                <p:button value="Add to Cart" icon="pi pi-shopping-cart"/>
+                            </div>
+                        </p:dataViewGridItem>
+
+
+                        <!-- List View -->
+                        <p:dataViewListItem>
+                            <div class="album-list-display">
+                                <h:commandLink action="#{search.sendComponentPage}">
+                                    <f:setPropertyActionListener 
+                                        target = "#{search.sendComponent}" value = "#{musicItem}" />
+                                    <p:graphicImage name="#{musicItem.coverPath}" library="images" styleClass="album-list-img"/>
+                                </h:commandLink> 
+                                <div class="album-list-info">
+
+                                    <h:commandLink action="#{search.sendComponentPage}">
+
+                                        <f:setPropertyActionListener 
+                                            target = "#{search.sendComponent}" value = "#{musicItem}" />
+
+                                        <div>#{musicItem.title}</div>
+                                        <div>#{musicItem.artists}</div>
+                                        <c:forEach var="artists" items="#{musicItem.artists}" >
+                                            <div>#{artists.artistName}</div>
+                                        </c:forEach>
+
+                                    </h:commandLink>
+
+                                    <h:form class="album-rating">
+                                        <p:rating readonly="true" value="4"/>
+                                    </h:form>
+                                    <div class="album-list-price">
+                                        <h:outputText value="#{musicItem.price}" styleClass="album-price">
+                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                        </h:outputText>
+                                        <p:button value="Add to Cart" icon="pi pi-shopping-cart"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:dataViewListItem>     
+                    </p:dataView>   
+                </h:form>
+
+
+                <!-- TRACKS VIEW -->
+                <h:form rendered="#{search.trackComponents.size() > 0}">
+                    <h1 >#{msgs.tracks}</h1>
+                    <p:dataView var="musicItem" value="#{search.trackComponents}" 
+                                multiViewState="true" gridIcon="pi pi-th-large" listIcon="pi pi-bars">
+
+                        <!-- Grid View -->
+
+                        <p:dataViewGridItem>
+                            <div class="album-grid-display">
+                                <h:commandLink action="#{search.sendComponentPage}">
+                                    <f:setPropertyActionListener 
+                                        target = "#{search.sendComponent}" value = "#{musicItem}" />
+                                    <p:graphicImage name="#{musicItem.coverPath}" library="images" styleClass="album-grid-img"/>
+                                    <div class="album-grid-info">
+                                        <div>#{musicItem.title}</div>
+                                        <div>#{musicItem.artists}</div>
+                                    </div>
+                                </h:commandLink>
+                                <h:form class="album-rating">
+                                    <p:rating readonly="true" value="4"/>
+                                </h:form>
+                                <h:outputText value="#{musicItem.price}" styleClass="album-price">
+                                    <f:convertNumber currencySymbol="$" type="currency"/>
+                                </h:outputText>
+                                <p:button value="Add to Cart" icon="pi pi-shopping-cart"/>
+                            </div>
+                        </p:dataViewGridItem>
+
+
+                        <!-- List View -->
+
+                        <p:dataViewListItem>
+                            <div class="album-list-display">
+                                <h:commandLink action="#{search.sendComponentPage}">
+                                    <f:setPropertyActionListener 
+                                        target = "#{search.sendComponent}" value = "#{musicItem}" />
+                                    <p:graphicImage name="#{musicItem.coverPath}" library="images" styleClass="album-list-img"/>
+                                </h:commandLink>
+                                <div class="album-list-info">
+
+                                    <h:commandLink action="#{search.sendComponentPage}">
+                                        <f:setPropertyActionListener 
+                                            target = "#{search.sendComponent}" value = "#{musicItem}" />
+
+                                        <div>#{musicItem.title}</div>
+                                        <div>#{musicItem.artists}</div>
+
+                                        <c:forEach var="artists" items="#{musicItem.artists}" >
+                                            <div>#{artists.artistName}</div>
+                                        </c:forEach>
+
+                                    </h:commandLink>
+
+                                    <h:form class="album-rating">
+                                        <p:rating readonly="true" value="4"/>
+                                    </h:form>
+                                    <div class="album-list-price">
+                                        <h:outputText value="#{musicItem.price}" styleClass="album-price">
+                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                        </h:outputText>
+                                        <p:button value="Add to Cart" icon="pi pi-shopping-cart"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </p:dataViewListItem>
+                    </p:dataView>  
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

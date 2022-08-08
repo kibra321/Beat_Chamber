@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!-- Header and navbar for the master template @Author Susan Vuu - 1735488 -->
+<!-- Add login components @Author Yan Tang - 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <h:form>
+            <header>
+                <h:link outcome="redirectToIndex">
+                    <h:graphicImage id="logo-Icon" library="images" name="UPDATED_BeatChamberLogo.png" styleClass="main-icon"/>
+                </h:link>
+            </header>
+            <!-- Main links -->
+            <nav>
+                <div class="topnav">
+                    <!-- Links that redirect -->
+                    <h:link value="#{msgs.homeTab}" outcome="redirectToIndex"/>
+                    <h:link value="#{msgs.HelpTab}" outcome="redirectToAbout"/>
+                    <h:link id="loginBtnNavBar" value="#{msgs.loginRegister}" outcome="redirectToLogin"
+                            rendered="#{!theLoginRegister.loggedIn}"/>
+                    <h:link value="#{msgs.management}" outcome="redirectToManagement"
+                            rendered="#{theLoginRegister.loggedIn and theLoginRegister.manager}"/>
+
+                    <h:commandLink id="cartIconNav" action="redirectToCart">
+                        <h:graphicImage library="images" name="shopping-cart.png" styleClass="cart-icon"/>
+                        <h:outputLabel>#{cookies.findNumberOfItemsInCart()}</h:outputLabel>
+                    </h:commandLink>
+                    <h:commandLink id="viewPurchases" value="#{msgs.viewPurchases}" action="redirectToPurchases" rendered="#{theLoginRegister.loggedIn}"/>
+                    <h:outputText value="#{msgs.welcome} #{theLoginRegister.username}" styleClass="welcome-label"
+                                  rendered="#{theLoginRegister.loggedIn}"/>
+                    <h:commandLink id="logout" action="#{theLoginRegister.doLogout}"
+                                   rendered="#{theLoginRegister.loggedIn}" title="#{msgs.logout}" >
+                        <i class="pi pi-fw pi-power-off"></i>
+                    </h:commandLink>
+                    <h:commandLink action="#{localeChanger.setLanguage('fr', 'CA')}" rendered="#{localeChanger.currentEnglish}">
+                        #{msgs.changeLanguage}
+                    </h:commandLink>
+                    <h:commandLink action="#{localeChanger.setLanguage('en', 'CA')}" rendered="#{!localeChanger.currentEnglish}">
+                        #{msgs.changeLanguage}
+                    </h:commandLink>
+                </div>
+            </nav>
+        </h:form>
+        <div class="search-form">
+            <h:form id="searchFunctions">
+                <h:inputText id="searchBar" a:placeholder="#{msgs.searchMusic}" value="#{search.searchValue}" styleClass="search" rendered="#{!search.dateCondition}"/>
+
+                <!--@author Korjon Chan-Jones
+                Added calendar functions, selected Item labels
+                and ajax
+                -->
+                <p:calendar id="startCalendar" a:placeholder="#{msgs.startDate}" value="#{search.startDate}" navigator="true"
+                            pattern="yyyy-MM-dd" rendered="#{search.dateCondition}"/>
+                <p:calendar id="endCalendar" a:placeholder="#{msgs.endDate}"  value="#{search.endDate}" navigator="true"
+                            pattern="yyyy-MM-dd" rendered="#{search.dateCondition}"/>
+
+                <h:selectOneMenu value="#{search.searchCondition}" styleClass="search-dropdown">
+                    <f:selectItem itemValue="albumTtitle" itemLabel="#{msgs.albumMenuItem}" />
+                    <f:selectItem itemValue="trackName" itemLabel="#{msgs.trackMenuItem}" />
+                    <f:selectItem itemValue="dateAdded" itemLabel="#{msgs.dateMenuItem}" />
+                    <f:selectItem itemValue="artistName" itemLabel="#{msgs.artistMenuItem}" />
+                    <f:ajax render="searchFunctions"/>
+                </h:selectOneMenu>
+
+                <h:commandButton action="#{search.findMusicContent}" styleClass="search-button" value="#{msgs.search}"/>
+            </h:form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap/4.3.1/css/bootstrap.min-jsf.css"/>
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="dataTableContent">
+                <h:form>
+                    <p:growl id="messages" showDetail="true"/>
+                    <h:panelGrid columns="2">
+                        <p:tieredMenu style="width:200px">
+                            <p:menuitem value="Total Sales" outcome="totalSales"/>
+                            <p:menuitem value="Sales by Client" outcome="salesByClient"/>
+                            <p:menuitem value="Sales by Artist" outcome="salesByArtist"/>
+                            <p:menuitem value="Sales by Track" outcome="salesByTracks"/>
+                            <p:menuitem value="Sales by Album" outcome="salesByAlbum"/>
+                            <p:menuitem value="Top Sellers" outcome="topSellers"/>
+                            <p:menuitem value="Top Clients"  outcome="topClients"/>
+                            <p:menuitem value="Zero Tracks" outcome="zeroTracks"/>
+                            <p:menuitem value="Zero Clients"  outcome="zeroClients"/>
+                        </p:tieredMenu>
+                        
+                    </h:panelGrid>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!-- Page representing an album. Author @Susan Vuu @1735488 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>#{msgs.albumPage}</title>
+        <h:outputStylesheet library="styles" name="main.css"/>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                <section id="album-section">
+                    <section class="album-display">
+                        <!-- Album and ads -->
+                        <div class="img-display">
+                            <h:outputLink value="#{adsJpaController.getAdLink(7)}" target="_blank">
+                                <h:graphicImage library="images" name="#{adsJpaController.getAdPath(7)}" styleClass="ad-max-height left"/>
+                            </h:outputLink>
+                            <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(album.albumId, false)}" height="500" width="500"/>
+                            <h:outputLink value="#{adsJpaController.getAdLink(8)}" target="_blank">
+                                <h:graphicImage library="images" name="#{adsJpaController.getAdPath(8)}" styleClass="ad-max-height right"/>
+                            </h:outputLink>
+                        </div>
+                        <!-- Album description -->
+                        <div class="album-info">
+                            <h2 class="album-title">#{albumsJpaController.findAlbums(album.albumId).albumTitle}</h2>
+                            <h2>#{albumsJpaController.getAlbumArtist(album.albumId).artistName}</h2>
+                            <h:outputText value="#{albumsJpaController.findAlbums(album.albumId).recordingLabel}"/>
+                            <br/>
+                            <h:outputText value="#{albumsJpaController.findAlbums(album.albumId).releaseDate}"/>
+                            <br/>
+                            <h:outputText value="#{albumsJpaController.getAlbumPrice(album.albumId)}" styleClass="album-price">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                            <br/>
+                            <h:outputText value="#{msgs.onSale} - #{msgs.previously}" rendered="#{albumsJpaController.isAlbumOnSale(album.albumId)}"/>
+                            <h:outputText value="#{albumsJpaController.findAlbums(album.albumId).listPrice}" 
+                                          rendered="#{albumsJpaController.isAlbumOnSale(album.albumId)}">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                        </div>
+
+                        <h:form styleClass=""><!-- @author Ibrahim -->
+                            <p:commandButton id="addToCartAlbum" icon="pi pi-shopping-cart" action="#{cookies.addAlbumToCart(album.albumId)}" value="#{cookies.adjustDisplay(album.albumId, msgs.addToCart,theLoginRegister.client.clientNumber)}" disabled="#{cookies.shouldTheAddToCartBeDisabled(album.albumId,theLoginRegister.client.clientNumber)}"/>
+                        </h:form>
+                        <br/>
+                        <h:form><!--@author Korjon Chang-Jones and Ibrahim Kebe-->
+
+                            <h:commandLink action="#{tracks.sendDefaultTrack}" > <!-- disabled="{cookies.shouldTheAddToCartBeDisabled(album.albumId,theLoginRegister.client.clientNumber)}" -->
+                                <f:param name="albumId" value="#{album.albumId}"/>
+                                <p:commandButton value="#{cookies.formatViewTracks(msgs.viewTracks, album.albumId, theLoginRegister.client.clientNumber)}"  /> <!-- disabled="{cookies.shouldTheAddToCartBeDisabled(album.albumId,theLoginRegister.client.clientNumber)}" -->
+                                <!--<button>{msgs.viewTracks}</button>-->
+                            </h:commandLink>
+                        </h:form>
+                    </section>
+                    <!--@author Korjon Chang-Jones Items similar to the album being viewed -->
+                    <section id="viewed-albums-section">
+                        <p class="item-extra">#{msgs.otherViewed}</p>
+                        <div id="viewed-items-container">
+                            <c:forEach var="albumItem" items="#{album.similarAlbums}">
+                                <div class="album-cover-group">
+                                    <div>
+                                        <h:form>
+                                            <h:commandLink action="#{album.sendAlbum}">
+                                                <f:param name="albumId" value="#{albumItem.albumNumber}"/>
+
+                                                <h:graphicImage
+                                                    library="images"
+                                                    name="#{albumsJpaController.getAlbumPath(albumItem.albumNumber, false)}"
+                                                    width="270"
+                                                    height="270"
+                                                    />
+                                            </h:commandLink>
+                                        </h:form>
+                                    </div>
+                                    <h:form>
+                                        <h:commandLink value="#{albumItem.albumTitle}" action="#{album.sendAlbum}">
+                                            <f:param name="albumId" value="#{albumItem.albumNumber}"/>
+                                        </h:commandLink>
+                                    </h:form>
+                                </div>
+                            </c:forEach>    
+                        </div>
+                    </section>
+                    <!-- Review section -->
+                    <!-- @author Korjon Chang-Jones -->
+                    <h2>#{msgs.reviews}</h2>
+                    <div id="reviewContainer">
+                        <c:forEach var="review" items="#{customerReviews.allReviews}">
+                            <div class="review-container">
+                                <p class="review-client-name">-#{review.clientNumber.firstName} #{review.clientNumber.lastName}</p>
+                                <p class="review-text">#{review.reviewText}</p>
+                                <hr/>
+                            </div>
+                        </c:forEach>
+                    </div>
+                    <h:panelGroup rendered="#{customerReviews.allEmptyReviewsList}">
+                        <p>#{msgs.noReviews}</p>
+                    </h:panelGroup>
+
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

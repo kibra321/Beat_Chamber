@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:body>
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                
+                <div id="checkout">
+			#{cookies.cleanCart(theLoginRegister.client.clientNumber)}
+			<div id="information">
+                            
+				<h:form>
+                                    <p:growl  id="growl" showDetail="false" sticky="true" class="pop"/>  
+                                    
+                                    <!--These will add some input for the user to enter the values in to be able to complete the checkout-->
+                                    <h:outputLabel class="inforLb" for="creditC"><h3>#{msgs.askCard}</h3></h:outputLabel>  
+                                    <h:inputText class="input_info" id="creditC" value="#{checkoutData.cardNumber}" required="true" requiredMessage="#{msgs.creaditCardNumMessage}" >
+                                        <f:converter converterId="com.beatChamber.CreditCardConverter" />
+                                        <f:validator validatorId="CreditCardValidator" />
+                                    </h:inputText>
+                                    <br/><br/>
+
+                                    <h:outputLabel class="inforLb" for="expDate"><h3>#{msgs.askDate}</h3></h:outputLabel>  
+                                    <h:inputText class="input_info" id="expDate" value="#{checkoutData.date}" required="true" requiredMessage="#{msgs.expiryDateMessage}" >
+                                        <f:convertDateTime pattern="MM/yyyy" />
+                                    </h:inputText><br/><br/>
+
+                                    <h:outputLabel class="inforLb" for="cvv"><h3>#{msgs.askCvv}</h3></h:outputLabel>  
+                                    <h:inputText class="input_info" id="cvv" value="#{checkoutData.cvv}" required="true" requiredMessage="#{msgs.cvvMessage}">
+                                        <f:validator validatorId="CvvValidation" />
+                                    </h:inputText><br/><br/>
+
+                                    <h:outputLabel class="inforLb" for="nameCard"><h3>#{msgs.askName}</h3></h:outputLabel>  
+                                    <h:inputText class="input_info" id="nameCard" value="#{checkoutData.name}" required="true" requiredMessage="#{msgs.nameMessage}" >
+                                        <f:validator validatorId="NameValidator" />
+                                    </h:inputText><br/><br/>
+
+                                    <h:outputLabel class="inforLb" for="address"><h3>#{msgs.askAddress}</h3></h:outputLabel>  
+                                    <h:inputText class="input_info" id="address" value="#{checkoutData.address}" required="true" requiredMessage="#{msgs.addressMessage}">
+                                        <f:validator validatorId="AddressValidator" />
+                                    </h:inputText><br/><br/>
+
+                                    <h:outputLabel class="inforLb" for="City"><h3>#{msgs.askCity}</h3></h:outputLabel>  
+                                    <h:inputText class="input_info" id="City" value="#{checkoutData.city}" required="true" requiredMessage="#{msgs.cityMessage}">
+                                        <f:validator validatorId="cityValidator" />
+                                    </h:inputText><br/><br/>
+
+                                    <h:outputLabel class="City" for="province"><h3>#{msgs.askProvince}</h3>
+                                        
+                                        
+                                    </h:outputLabel>  
+                                    <h:selectOneMenu value="#{checkoutData.province}">
+                                        <f:ajax event="change" render="renderPst" />
+                                        <f:ajax event="change" render="renderHst" />
+                                        <f:ajax event="change" render="renderGst" />
+
+                                        <f:ajax event="change" render="renderPstRealPrice" />
+                                        <f:ajax event="change" render="renderHstRealPrice" />
+                                        <f:ajax event="change" render="renderGstRealPrice" />
+
+                                        <f:ajax event="change" render="rendertotalPrice" />
+
+                                        <f:selectItem itemValue="1" itemLabel="Alberta" />
+                                        <f:selectItem itemValue="2" itemLabel="British Columbia" />
+                                        <f:selectItem itemValue="3" itemLabel="Manitoba" />   
+                                        <f:selectItem itemValue="4" itemLabel="New Brunswick" />   
+                                        <f:selectItem itemValue="5" itemLabel="Newfoundland and Labrador" />   
+                                        <f:selectItem itemValue="6" itemLabel="Northwest Territories" />   
+                                        <f:selectItem itemValue="7" itemLabel="Nova Scotia" />   
+                                        <f:selectItem itemValue="8" itemLabel="Nunavut" />   
+                                        <f:selectItem itemValue="9" itemLabel="Ontario" />   
+                                        <f:selectItem itemValue="10" itemLabel="Prince Edward Island" />   
+                                        <f:selectItem itemValue="11" itemLabel="Quebec" />   
+                                        <f:selectItem itemValue="12" itemLabel="Saskatchewan" />   
+                                        <f:selectItem itemValue="13" itemLabel="Yukon" />   
+                                    </h:selectOneMenu>
+
+                                    <br/>
+                                    <br/>
+                                    <br/>
+
+                                 <button><h:commandButton action="#{checkoutData.addOrders()}" styleClass="validationBTN" value="#{msgs.completeCheckout}" type="submit"/></button>
+                                    <!--<h:commandButton action="#{checkoutData.addOrders}" value="#{msgs.completeCheckout}" type="submit"/>-->
+				</h:form>
+                            
+                            
+
+			</div>
+
+                        
+                    
+			<div id="show_prices">
+
+
+                            
+				<h2>#{msgs.showItems}</h2><br/>
+                                <p>
+                                <h1>#{msgs.albumsboughtTitle}</h1>
+                                <c:forEach var="albumItem" items="#{albumsJpaController.retrieveAllAlbumsInTheCart()}">
+                                    <h3>#{albumItem.albumTitle} #{albumItem.listPrice}$</h3><br/>
+                                </c:forEach>
+                                </p>
+                                <h1>#{msgs.trackboughtTitle}</h1>
+                                <p>
+                                    <c:forEach var="trackItem" items="#{tracksController.retrieveAllTracksInTheCart()}">
+                                        <h3>#{trackItem.trackTitle} #{trackItem.listPrice}$</h3><br/>
+                                    </c:forEach>
+                                </p>
+				<hr class="hrColor" />
+                                <h3>#{msgs.subTotal} #{checkoutData.computePrices(tracksController.totalPrice, albumsJpaController.totalPrice)}$</h3><br/>
+                                <!--                                                                                                                                                                                                                                                                                                                                       get the price in pst                                           -->
+                                <h3>#{msgs.pst} <h:outputText id="renderPst" value="#{provincesJpaController.findProvinces(checkoutData.province).pst}"  /> %  -------➤    <h:outputText id="renderPstRealPrice" value="#{checkoutData.computePst(checkoutData.computePrices(tracksController.totalPrice, albumsJpaController.totalPrice), provincesJpaController.findProvinces(checkoutData.province).pst)}"/> $</h3><br/>
+                                <!--                                                                                                                                                                                                                                                                                                                                       get the price in gst                                           -->
+                                <h3>#{msgs.gst} <h:outputText id="renderGst" value="#{provincesJpaController.findProvinces(checkoutData.province).gst}"  /> %  -------➤    <h:outputText id="renderGstRealPrice" value="#{checkoutData.computeGst(checkoutData.computePrices(tracksController.totalPrice, albumsJpaController.totalPrice), provincesJpaController.findProvinces(checkoutData.province).gst)}"/> $</h3><br/>
+                                <!--                                                                                                                                                                                                                                                                                                                                       get the price in hst                                           -->
+                                <h3>#{msgs.hst} <h:outputText id="renderHst" value="#{provincesJpaController.findProvinces(checkoutData.province).hst}"  /> %  -------➤    <h:outputText id="renderHstRealPrice" value="#{checkoutData.computeHst(checkoutData.computePrices(tracksController.totalPrice, albumsJpaController.totalPrice), provincesJpaController.findProvinces(checkoutData.province).hst)}"/> $</h3><br/>
+				<hr class="hrColor"/>
+                                <br/>
+                                <h1>#{msgs.total} <h:outputText id="rendertotalPrice"  value="#{checkoutData.getTotalPriceWithTax(checkoutData.computePrices(tracksController.totalPrice, albumsJpaController.totalPrice), provincesJpaController.findProvinces(checkoutData.province).pst, provincesJpaController.findProvinces(checkoutData.province).gst, provincesJpaController.findProvinces(checkoutData.province).hst)}"/> $</h1>
+
+                                
+			</div>
+			
+		</div>
+                
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

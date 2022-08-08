@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!-- Management template page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/master_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="content">
+                <div>
+                    <div class="container-page">
+                        <h:panelGrid columns="4" cellspacing = "50" class="container-panel">                    
+                            <p:link id="clientButton" outcome="manageClients">
+                                <i class="fas fa-user-edit fa-lg"></i><br/><h6>Clients</h6>
+                            </p:link>
+                            <p:link  id="albumButton" outcome="manageAlbums">
+                                <i class="fas fa-music fa-lg"></i><br/><h6>#{msgs.albums}</h6>
+                            </p:link>
+                            <p:link  id="trackButton" outcome="manageTracks">
+                                <i class="fas fa-compact-disc fa-lg"></i><br/><h6>#{msgs.tracks}</h6>
+                            </p:link>
+                            <p:link  id="genreButton"  outcome="manageGenres">
+                                <i class="fas fa-guitar fa-lg"></i><br/><h6>#{msgs.genres}</h6>
+                            </p:link>
+                            <p:link  id="artistButton" outcome="manageArtists" >
+                                <i class="fas fa-users fa-lg"></i><br/><h6>#{msgs.artists}</h6>
+                            </p:link>
+                            <p:link  id="orderButton" outcome="manageOrders" >
+                                <i class="fas fa-file-alt fa-lg"></i><br/><h6>#{msgs.orders}</h6>
+                            </p:link>
+                            <p:link  id="reviewButton" outcome="manageReviews" >
+                                <i class="fas fa-star-half-alt fa-lg"></i><br/><h6>#{msgs.reviews}</h6>
+                            </p:link>
+                            <p:link  id="reportButton" outcome="manageReports" >
+                                <i class="fas fa-chart-bar fa-lg" ></i><br/><h6>#{msgs.reports}</h6>
+                            </p:link>
+                            <p:link  id="rssButton" outcome="manageRSSFeeds" >
+                                <i class="fas fa-rss-square fa-lg"></i><br/><h6>#{msgs.rssFeeds}</h6>
+                            </p:link>
+                            <p:link  id="surveyButton" outcome="manageSurveys">
+                                <i class="fas fa-chart-line fa-lg"></i><br/><h6>#{msgs.surveys}</h6>
+                            </p:link>
+                            <p:link  id="adButton" outcome="manageAds">
+                                <i class="fas fa-ad fa-lg"></i><br/><h6>#{msgs.ads}</h6>
+                            </p:link>
+                        </h:panelGrid>
+
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

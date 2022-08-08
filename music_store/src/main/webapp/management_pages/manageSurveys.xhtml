@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!-- Management page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="dataTableContent">
+
+                <h:form id="form">
+                    <p:growl id="messages" showDetail="true"/>
+                    <p:dataTable id="dt-surveys" widgetVar="dtSurveys" var="survey" value="#{theSurveys.surveys}"
+                                 reflow="true" 
+                                 selection="#{theSurveys.selectedSurvey}" rowKey="#{survey.surveyId}" paginator="true"
+                                 rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <div>
+                                <span class="table-title">
+                                    Surveys
+                                </span>
+                                <span>
+                                    <p:commandButton value="Add New Survey" icon="pi pi-plus" actionListener="#{theSurveys.openNew()}"
+                                                     update=":form:manage-survey-content" 
+                                                     oncomplete="PF('manageSurveyDialog').show()"
+                                                     styleClass="rounded-button ui-button-help float-right">
+                                        <p:resetInput target=":form:manage-survey-content"/>
+                                    </p:commandButton>
+                                </span>
+                            </div>
+                        </f:facet>
+
+
+                        <p:column style="width:calc(50px)" headerText="ID" sortBy="#{survey.surveyId}">
+                            <h:outputText value="#{survey.surveyId}"/>
+                        </p:column>
+                        <p:column style="width:calc(400px)" headerText="Title" sortBy="#{survey.title}"
+                                  filterBy="#{survey.title}" filterMatchMode="contains">
+                            <h:outputText value="#{survey.title}"/>
+                        </p:column>
+
+
+                        <p:column style="width:calc(50px)" exportable="false" headerText="Edit" >
+                            <p:commandButton icon="pi pi-pencil" update=":form:manage-survey-content"
+                                             oncomplete="PF('manageSurveyDialog').show()"
+                                             styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                <f:setPropertyActionListener value="#{survey}" target="#{theSurveys.selectedSurvey}"/>
+                                <p:resetInput target=":form:manage-survey-content"/>
+                            </p:commandButton>
+                        </p:column>
+
+                        <p:column style="width:calc(50px)" exportable="false" headerText="Delete" >
+                            <p:commandButton class="rounded-button" icon="pi pi-trash" process="@this"
+                                             oncomplete="PF('deleteSurveyDialog').show()">
+                                <f:setPropertyActionListener value="#{survey}" target="#{theSurveys.selectedSurvey}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column style="width:calc(50px)" headerText="Enabled">
+                            <p:selectBooleanButton id="enabled" value="#{survey.enabled}" onLabel="Yes" offLabel="No" style="width:6rem">
+                                <p:ajax update="enabled" listener="#{theSurveys.updateEnabled(survey)}"/>
+                            </p:selectBooleanButton>
+                        </p:column>
+                    </p:dataTable>
+
+
+                    <p:dialog header="Survey Details" showEffect="fade" modal="true"
+                              widgetVar="manageSurveyDialog" responsive="true" width="500px" height="450px">
+                        <p:outputPanel id="manage-survey-content" class="ui-fluid" rendered="#{ not empty theSurveys.selectedSurvey}">
+                            <p:outputPanel >
+                                <div>
+                                    <p:outputLabel for="title" value="Title"/>
+                                    <p:inputTextarea id="title"  value="#{theSurveys.selectedSurvey.title}" required="true"
+                                                     requiredMessage="#{msgs.surveyTitleRequired}"/>
+                                    <h:message for="title" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="enabledStatus" value="#{msgs.enabledStatus}"/><br/>
+                                    <p:selectBooleanCheckbox value="#{theSurveys.selectedSurvey.enabled}" 
+                                                             id="enabledStatus"
+                                                             itemLabel="Enabled"/>
+                                    <h:message for="enabledStatus" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="numOfChoices" value="Please choose Number Of Choices"/>
+                                    <p:selectOneMenu id="numOfChoices" value ="#{theSurveys.numOfChoices}"
+                                                     valueChangeListener="#{theSurveys.setNumOfChoicesAction()}"
+                                                     required="true" requiredMessage="Number of choices id required"> 
+                                        <f:selectItem itemValue = "2" itemLabel = "2" /> 
+                                        <f:selectItem itemValue = "3" itemLabel = "3" /> 
+                                        <f:selectItem itemValue = "4" itemLabel = "4" /> 
+                                        <f:selectItem itemValue = "5" itemLabel = "5" /> 
+                                        <f:ajax />
+                                    </p:selectOneMenu>
+                                    <h:message for="numOfChoices" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="option1" rendered="#{theSurveys.choice1 != null }" value="Option1"/>
+                                    <p:inputText id="option1" rendered="#{theSurveys.choice1 != null}" value="#{theSurveys.choice1.choiceName}"/>
+                                    <h:message for="option1" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="vote1" rendered="#{theSurveys.choice1 != null}" value="Option1 Votes"/>
+                                    <p:inputText id="vote1" rendered="#{theSurveys.choice1 != null}" value="#{theSurveys.choice1.votes}"/>
+                                    <h:message for="vote1" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+                                <div>
+                                    <p:outputLabel for="option2" rendered="#{theSurveys.choice2 != null}" value="Option2"/>
+                                    <p:inputText id="option2" rendered="#{theSurveys.choice2 != null}" value="#{theSurveys.choice2.choiceName}"/>
+                                    <h:message for="option2" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="vote2" rendered="#{theSurveys.choice2 != null}" value="Option2 Votes"/>
+                                    <p:inputText id="vote2" rendered="#{theSurveys.choice2 != null}" value="#{theSurveys.choice2.votes}"/>
+                                    <h:message for="vote2" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+                            </p:outputPanel>
+                            <p:outputPanel id="manage-options-content" class="ui-fluid">
+                                <div>
+                                    <p:outputLabel for="option3" rendered="#{theSurveys.choice3 != null and theSurveys.renderable3}" value="Option3"/>
+                                    <p:inputText id="option3" rendered="#{theSurveys.choice3 != null  and theSurveys.renderable3}" value="#{theSurveys.choice3.choiceName}"/>
+                                    <h:message for="option3" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div>
+                                    <p:outputLabel for="vote3" rendered="#{theSurveys.choice3 != null and theSurveys.renderable3}" value="Option3 Votes"/>
+                                    <p:inputText id="vote3" rendered="#{theSurveys.choice3 != null and theSurveys.renderable3}" value="#{theSurveys.choice3.votes}"/>
+                                    <h:message for="vote3" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+                                <div>
+                                    <p:outputLabel for="option4" rendered="#{theSurveys.choice4 != null and theSurveys.renderable4}" value="Option4"/>
+                                    <p:inputText id="option4" rendered="#{theSurveys.choice4 != null and theSurveys.renderable4}" value="#{theSurveys.choice4.choiceName}"/>
+                                    <h:message for="option4" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div >
+                                    <p:outputLabel for="vote4" rendered="#{theSurveys.choice4 != null and theSurveys.renderable4}" value="Option4 Votes"/>
+                                    <p:inputText id="vote4" rendered="#{theSurveys.choice4 != null and theSurveys.renderable4}" value="#{theSurveys.choice4.votes}"/>
+                                    <h:message for="vote4" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+                                <div>
+                                    <p:outputLabel for="option5" rendered="#{theSurveys.choice5 != null and theSurveys.renderable5}" value="Option5"/>
+                                    <p:inputText id="option5" rendered="#{theSurveys.choice5 != null and theSurveys.renderable5}" value="#{theSurveys.choice5.choiceName}"/>
+                                    <h:message for="option5" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                                <div >
+                                    <p:outputLabel for="vote5" rendered="#{theSurveys.choice5 != null and theSurveys.renderable5}" value="Option5 Votes"/>
+                                    <p:inputText id="vote5" rendered="#{theSurveys.choice5 != null and theSurveys.renderable5}" value="#{theSurveys.choice5.votes}"/>
+                                    <h:message for="vote5" styleClass="errorMessage" style="color:red"/>
+                                </div>
+
+                            </p:outputPanel>
+                        </p:outputPanel>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" widgetVar="saveButton"
+                                             onclick="PF('saveButton').disable()"
+                                             icon="pi pi-check" actionListener="#{theSurveys.saveSurvey()}"
+                                             update="manage-survey-content" process="manage-survey-content @this"
+                                             oncomplete="PF('saveButton').enable()"/>
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageSurveyDialog').hide()"
+                                             class="ui-button-secondary" actionListener ="#{theSurveys.cancelAction()}"/>
+                        </f:facet>
+                    </p:dialog>
+
+
+                    <p:confirmDialog widgetVar="deleteSurveyDialog" showEffect="fade"
+                                     message="Delete the survey?" header="Confirm" severity="warn">
+                        <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{theSurveys.deleteSurvey}"
+                                         process="@this" oncomplete="PF('deleteSurveyDialog').hide()"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                         onclick="PF('deleteSurveyDialog').hide()"/>
+                    </p:confirmDialog>
+
+                    <p:confirmDialog global="true" showEffect="fade">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" 
+                                         icon="pi pi-check"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                         icon="pi pi-times"/>
+                    </p:confirmDialog>
+
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

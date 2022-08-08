@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html >
+<!-- Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap/4.3.1/css/bootstrap.min-jsf.css"/>
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="dataTableContent">
+                <h:form  id="form">
+                    <p:growl id="messages" showDetail="true"/>
+
+                    <p:toolbar style="width: 60%; margin-left: 20%">
+                        <p:toolbarGroup>  
+                            <p:outputLabel for="start_date" value="start date"/>
+                            <p:datePicker id="start_date" value="#{TotalSales.saleStartDate}" />
+                            <p:outputLabel for="end_date" value="end date"/>
+                            <p:datePicker id="end_date" value="#{TotalSales.saleEndDate}" />
+                            <p:commandButton action="#{TotalSales.retrieveAllOrders()}" value="Report" update="form:dt-albumlist,form:dt-tracklist" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
+                    <h5 class="table-title">Report: Total Sales</h5>
+
+                    <p:splitter >
+                        <p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center" size="15" minSize="10">
+                            <p:tieredMenu style="width:200px">
+                            <p:menuitem value="Total Sales" outcome="totalSales"/>
+                            <p:menuitem value="Sales by Client" outcome="salesByClient"/>
+                            <p:menuitem value="Sales by Artist" outcome="salesByArtist"/>
+                            <p:menuitem value="Sales by Track" outcome="salesByTracks"/>
+                            <p:menuitem value="Sales by Album" outcome="salesByAlbum"/>
+                            <p:menuitem value="Top Sellers" outcome="topSellers"/>
+                            <p:menuitem value="Top Clients"  outcome="topClients"/>
+                            <p:menuitem value="Zero Tracks" outcome="zeroTracks"/>
+                            <p:menuitem value="Zero Clients"  outcome="zeroClients"/>
+                        </p:tieredMenu>
+                        </p:splitterPanel>
+
+                        <p:splitterPanel size="80">
+                            <p:splitter layout="vertical">
+                                <p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center">
+                                    <p:dataTable id="dt-albumlist" widgetVar="dtalbumlist" 
+                                                 var="albumitem" value="#{TotalSales.totalAlbumSalesInfos}">
+                                        <p:column  headerText="catogory" groupRow="true">
+                                            <h:outputText style="vertical-align: middle; margin-left: .5rem"
+                                                          value="#{TotalSales.category[0]}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Album ID" sortBy="#{albumitem.albumId}">
+                                            <h:outputText value="#{albumitem.albumId}"/>
+                                        </p:column>
+                                        <p:column headerText="Album Title" sortBy="#{albumitem.albumTitle}">
+                                            <h:outputText value="#{albumitem.albumTitle}"/>
+                                        </p:column>
+                                        <p:column headerText="List Price" sortBy="#{albumitem.listPrice}" >
+                                            <h:outputText value="#{albumitem.listPrice}">
+                                                <f:convertNumber pattern="$#,##0.00" currencySymbol="$" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Sale Price" sortBy="#{albumitem.salePrice}" >
+                                            <h:outputText value="#{albumitem.salePrice}">
+                                                <f:convertNumber pattern="$#,##0.00" currencySymbol="$" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Order Date" sortBy="#{albumitem.orderDate}">
+                                            <h:outputText value="#{albumitem.orderDate}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:columnGroup type="footer">
+                                            <p:row>
+                                                <p:column colspan="3" style="text-align:right" footerText="Total Album Sales:"/>
+                                                <p:column style="text-align:left" footerText="#{TotalSales.totalAlbumSales}"/>
+                                            </p:row>
+                                        </p:columnGroup>
+                                    </p:dataTable>
+                                </p:splitterPanel>
+                                <p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center">
+                                    <p:dataTable id="dt-tracklist" widgetVar="dttracklist" 
+                                                 var="trackitem" value="#{TotalSales.totalTrackSalesInfos}">
+                                        <p:column  headerText="catogory" groupRow="true">
+                                            <h:outputText style="vertical-align: middle; margin-left: .5rem"
+                                                          value="#{TotalSales.category[1]}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Track ID" sortBy="#{trackitem.trackId}">
+                                            <h:outputText value="#{trackitem.trackId}"/>
+                                        </p:column>
+                                        <p:column headerText="Album ID" sortBy="#{trackitem.albumNumber}">
+                                            <h:outputText value="#{trackitem.albumNumber}"/>
+                                        </p:column>
+                                        <p:column headerText="Album Title" sortBy="#{trackitem.albumTitle}">
+                                            <h:outputText value="#{trackitem.albumTitle}"/>
+                                        </p:column>
+                                        <p:column headerText="Track Title" sortBy="#{trackitem.trackTitle}">
+                                            <h:outputText value="#{trackitem.trackTitle}"/>
+                                        </p:column>
+                                        <p:column headerText="List Price" sortBy="#{trackitem.listPrice}" >
+                                            <h:outputText value="#{trackitem.listPrice}">
+                                                <f:convertNumber pattern="$#,##0.00" currencySymbol="$" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Sale Price" sortBy="#{trackitem.salePrice}" >
+                                            <h:outputText value="#{trackitem.salePrice}">
+                                                <f:convertNumber pattern="$#,##0.00" currencySymbol="$" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Order Date" sortBy="#{trackitem.orderDate}">
+                                            <h:outputText value="#{trackitem.orderDate}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:columnGroup type="footer">
+                                            <p:row>
+                                                <p:column colspan="3" style="text-align:right" footerText="Total Track sales:"/>
+                                                <p:column style="text-align:left" footerText="#{TotalSales.totalTrackSales}"/>
+                                            </p:row>
+                                        </p:columnGroup>
+                                    </p:dataTable>
+                                </p:splitterPanel>
+                            </p:splitter>
+                        </p:splitterPanel>
+                    </p:splitter>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

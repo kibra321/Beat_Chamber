@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <!-- Printing the recent purchase of the client @Author Susan Vuu -->
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                <section>
+                    <p:outputPanel id="printer-section" rendered="#{invoice.getClientRecentOrderId(theLoginRegister.clientId) != 0}">
+                        <h1>#{msgs.emailSubject} #{invoice.getClientRecentOrderId(theLoginRegister.clientId)} #{theLoginRegister.username}</h1>
+                        <h2>Tracks</h2>
+                        <p:repeat value="#{invoice.getClientRecentOrderTracks(theLoginRegister.clientId)}" var="recentTracks">
+                            <h:outputText value="#{recentTracks.trackId.trackTitle}"/>
+                            <h:outputText value="#{recentTracks.trackId.listPrice}">
+                                <f:convertNumber currencySymbol="$" type="currency"/>
+                            </h:outputText>
+                        </p:repeat>
+                    </p:outputPanel>
+                    
+                    <p:commandButton value="Print" type="button" icon="pi pi-print" styleClass="p-d-block p-shadow-2 p-mb-3" 
+                                     rendered="#{invoice.getClientRecentOrderId(theLoginRegister.clientId) != 0}">
+                        <p:printer target="printer-section"/>
+                    </p:commandButton>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

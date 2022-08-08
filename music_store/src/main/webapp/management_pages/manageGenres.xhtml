@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- Genre Management page. @Author Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <ui:define name="dataTableContent">
+
+                <h:form id="form">
+                    <p:growl id="messages" showDetail="true"/>
+                    <p:dataTable id="dt-genres" widgetVar="dtGenres" var="genre" value="#{theGenres.genres}"
+                                 reflow="true" 
+                                 selection="#{theGenres.selectedGenre}" rowKey="#{genre.genreId}" paginator="true"
+                                 rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <div>
+                                <span class="table-title">
+                                    Genres
+                                </span>
+                                <span>
+                                    <p:commandButton value="Add New Genre" icon="pi pi-plus" actionListener="#{theGenres.openNew()}"
+                                                     update=":form:manage-genre-content" 
+                                                     oncomplete="PF('manageGenreDialog').show()"
+                                                     styleClass="rounded-button ui-button-help float-right">
+                                        <p:resetInput target=":form:manage-genre-content"/>
+                                    </p:commandButton>
+                                </span>
+                            </div>
+                        </f:facet>
+
+
+                        <p:column style="width:calc(20px)" headerText="ID" sortBy="#{genre.genreId}" 
+                                  filterBy="#{genre.genreId}" filterMatchMode="contains">
+                            <h:outputText value="#{genre.genreId}" />
+                        </p:column>
+                        <p:column style="width:calc(100px)" headerText="Genre Name" sortBy="#{genre.genreName}" 
+                                  filterBy="#{genre.genreName}" filterMatchMode="contains">
+                            <h:outputText value="#{genre.genreName}"/>
+                        </p:column>
+                       
+
+                        <p:column style="width:calc(50px)" exportable="false" headerText="Edit" >
+                            <p:commandButton icon="pi pi-pencil" update=":form:manage-genre-content"
+                                             oncomplete="PF('manageGenreDialog').show()"
+                                             styleClass="edit-button rounded-button ui-button-help" process="@this">
+                                <f:setPropertyActionListener value="#{genre}" target="#{theGenres.selectedGenre}"/>
+                                <p:resetInput target=":form:manage-genre-content"/>
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+
+
+                    <p:dialog header="Genre Details" showEffect="fade" modal="true"
+                              widgetVar="manageGenreDialog" responsive="true" width="500px" height="200px">
+                        <p:outputPanel id="manage-genre-content" class="ui-fluid">
+                            <p:outputPanel rendered="#{not empty theGenres.selectedGenre}">
+                                <div>
+                                    <p:outputLabel for="genreName" value="#{msgs.genreName}"/>
+                                    <p:inputText id="genreName"  value="#{theGenres.selectedGenre.genreName}" 
+                                                 required="true" requiredMessage="#{msgs.genrenameRequired}"
+                                                 validator="#{theGenres.validateUniqueGenreName}"/>
+                                    <h:message for="genreName" styleClass="errorMessage" style="color:red"/>
+                                </div>
+                            </p:outputPanel>
+                        </p:outputPanel>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Save" icon="pi pi-check" actionListener="#{theGenres.saveGenre}"
+                                             widgetVar="saveButton" onclick="PF('saveButton').disable()"
+                                             update="manage-genre-content" process="manage-genre-content @this"
+                                             oncomplete="PF('saveButton').enable()"/>
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageGenreDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </f:facet>
+                    </p:dialog>
+
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+
+</html>

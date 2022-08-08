@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:body>
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                
+                <div id="cartPage">
+                    <h:form>
+                        <h:commandLink action="#{cookies.clearTheCart()}" rendered="#{albumsJpaController.retrieveAllAlbumsInTheCart().size() > 0 || tracksController.retrieveAllTracksInTheCart().size() > 0}">
+                            <p:button value="#{msgs.clearCart}"  />
+                        </h:commandLink>
+                    </h:form>
+                    <h2 class="changeTextToWhite">#{msgs.albumsboughtTitle}</h2>
+                    <!-- This will display all of the albums -->
+                    <c:forEach var="albumItem" items="#{albumsJpaController.retrieveAllAlbumsInTheCart()}">
+                        <!-- This is a div that will be created for every album made -->
+                        <div class="itemList" style="display:#{cookies.checkIfAlbumIsInCart(albumItem.albumNumber)}">
+                            <!-- The form tag is being use so that we do not get the warning message -->
+                            <h:form>
+                                <div class="itemPicture"><h:graphicImage  library="images" name="#{albumsJpaController.getAlbumPath(albumItem.albumNumber, true)}" styleClass="album-img-small"/></div>
+                                <div class="dataInformation">
+                                <h2>#{msgs.showTitle} #{albumItem.albumTitle}</h2><br/>
+                                <h2>#{msgs.showPrice} #{albumItem.listPrice}$</h2><br/>
+                                <h2>#{msgs.showNumberTracks} #{albumItem.totalTracks} </h2><br/>
+                                <h2>#{msgs.showDateRealease} #{albumItem.formatedDate}</h2><br/>
+                                <h2>#{msgs.showRecordLabel} #{albumItem.recordingLabel}</h2>
+                                </div>
+
+                                <h:commandLink action="#{cookies.removeItemFromCart(albumItem.cookieId)}" >
+                                    <p:button value="#{msgs.removeItem}" class="roundedButton" />
+                                </h:commandLink>
+                            </h:form>
+                            
+                        </div>
+                        <!-- This will display every track that have been bought -->
+                    </c:forEach>
+                    
+                    <h2 class="changeTextToWhite">#{msgs.trackboughtTitle}</h2>
+                    <c:forEach var="trackItem" items="#{tracksController.retrieveAllTracksInTheCart()}">
+                        <!-- This is a div created for every track -->
+                        <div class="itemList" style="display:#{cookies.checkIfTrackIsInCart(trackItem.trackId)}">
+                            <h:form>
+                                <div class="itemPicture"><h:graphicImage  library="images" name="#{albumsJpaController.getAlbumPath(trackItem.albumNumber.albumNumber, true)}" styleClass="album-img-small"/></div>
+                                <div class="dataInformation">
+                                    <h2>#{msgs.showTitle} #{trackItem.trackTitle}</h2>
+                                    <br/>
+                                    <h2>#{msgs.showGenre} #{trackItem.musicCategory}</h2>
+                                    <br/>
+                                    <h2>#{msgs.showPrice} #{trackItem.listPrice}$</h2>
+                                    <br/>
+                                    <h2>#{msgs.showLength} #{trackItem.playLength}</h2>
+                                    <br/>
+                                    <h2>#{msgs.showAlbumTitle} #{trackItem.albumNumber.albumTitle}</h2>
+                                </div>
+                                <h:commandLink action="#{cookies.removeItemFromCart(trackItem.trackId)}" >
+                                    <p:button value="#{msgs.removeItem}" class="roundedButton" />
+                                </h:commandLink>
+                            </h:form>
+                        </div>
+                    </c:forEach>
+                    
+                    <br/>
+                    <br/>
+                    
+                    <!-- Button that will allow the user to get to the checkout page -->
+                    <h:form>
+                    <h:commandLink action="#{checkoutData.checkoutRedirect('checkout.xhtml')}"  rendered="#{albumsJpaController.retrieveAllAlbumsInTheCart().size() > 0 || tracksController.retrieveAllTracksInTheCart().size() > 0}">
+                        <p:button value="#{msgs.goToCheckout}" class="roundedButton2" />
+                    </h:commandLink>
+                    </h:form>
+                    
+                    <h:panelGroup rendered="#{album.emptyCart}">
+                    <div id="no-results-container">
+                    <h:panelGroup id="no-results-container-span" >
+                        <h2 id="browse-no-results">#{msgs.noCartItems}</h2>
+                    </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+                   
+                </div>
+                
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

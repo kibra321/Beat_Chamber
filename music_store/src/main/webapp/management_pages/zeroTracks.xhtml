@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html >
+<!-- Yan Tang 1733570 -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css" />
+        <h:outputStylesheet library="webjars" name="bootstrap/4.3.1/css/bootstrap.min-jsf.css"/>
+        <h:outputStylesheet library="webjars" name="font-awesome/5.15.2/css/all.min-jsf.css" />
+        <title>#{msgs.managetitle}</title>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="../templates/management_template.xhtml">
+            <!-- Promotion banner -->
+            <ui:define name="dataTableContent">
+                <h:form  id="form">
+                    <p:growl id="messages" showDetail="true"/>
+
+                    <p:toolbar style="width: 60%; margin-left: 20%">
+                        <p:toolbarGroup>  
+                            <p:outputLabel for="start_date" value="start date"/>
+                            <p:datePicker id="start_date" value="#{ZeroTrackSales.saleStartDate}" />
+                            <p:outputLabel for="end_date" value="end date"/>
+                            <p:datePicker id="end_date" value="#{ZeroTrackSales.saleEndDate}" />
+                            <p:commandButton action="#{ZeroTrackSales.retrieveAllOrders()}" value="Report" update="form:dt-ZeroTrack" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                    <h:panelGrid columns="2">
+                        <p:tieredMenu style="width:200px">
+                            <p:menuitem value="Total Sales" outcome="totalSales"/>
+                            <p:menuitem value="Sales by Client" outcome="salesByClient"/>
+                            <p:menuitem value="Sales by Artist"/>
+                            <p:menuitem value="Sales by Track" outcome="salesByTracks"/>
+                            <p:menuitem value="Sales by Album"/>
+                            <p:menuitem value="Top Sellers"/>
+                            <p:menuitem value="Top Clients"  outcome="topClients"/>
+                            <p:menuitem value="Zero Tracks" outcome="zeroTracks"/>
+                            <p:menuitem value="Zero Clients"  outcome="zeroClients"/>
+                        </p:tieredMenu>
+
+
+                        <p:dataTable id="dt-ZeroTrack" widgetVar="dtZeroTrack" var="trackitem" value="#{ZeroTrackSales.zeroTrackSalesInfos}"
+                                     reflow="true" paginator="true"
+                                     rows="10" paginatorPosition="bottom">
+                            <f:facet name="header">
+                                <div>
+                                    <span class="table-title">Report: Zero Tracks</span>
+                                </div>
+                            </f:facet>
+
+                            <p:column headerText="Track ID" sortBy="#{trackitem.trackId}">
+                                <h:outputText value="#{trackitem.trackId}"/>
+                            </p:column>
+                            <p:column headerText="Album ID" sortBy="#{trackitem.albumNumber.albumNumber}">
+                                <h:outputText value="#{trackitem.albumNumber.albumNumber}"/>
+                            </p:column>
+                            <p:column headerText="Album Title" sortBy="#{trackitem.albumNumber.albumTitle}">
+                                <h:outputText value="#{trackitem.albumNumber.albumTitle}"/>
+                            </p:column>
+                            <p:column headerText="Track Title" sortBy="#{trackitem.trackTitle}">
+                                <h:outputText value="#{trackitem.trackTitle}"/>
+                            </p:column>
+                            <p:column headerText="List Price" sortBy="#{trackitem.listPrice}" >
+                                <h:outputText value="#{trackitem.listPrice}">
+                                    <f:convertNumber pattern="$#,##0.00" currencySymbol="$" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Sale Price" sortBy="#{trackitem.salePrice}" >
+                                <h:outputText value="#{trackitem.salePrice}">
+                                    <f:convertNumber pattern="$#,##0.00" currencySymbol="$" />
+                                </h:outputText>
+                            </p:column>
+
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

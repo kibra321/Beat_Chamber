@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!-- 404 page @Author Susan Vuu-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <h:outputStylesheet library="styles" name="main.css"/>
+    </h:head>
+    <h:body>
+        <!-- Base template of the page -->
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                <section class="error-section">
+                    <h1>#{msgs.invalidPage}</h1>
+                    <h:graphicImage library="images" name="404image.jpg"/>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

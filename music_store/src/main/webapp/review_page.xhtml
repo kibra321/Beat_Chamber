@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="stylesheet" name="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" />
+        <h:outputStylesheet library="styles" name="main.css" />
+        <title>Review Page</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="templates/master_template.xhtml">
+            <ui:define name="content">
+                <h:form id="form">
+                    <section>
+                        <div>
+                            <h2>Write a Review for "#{tracks.trackTitle}"</h2>
+                            <div id="album-list">
+                                <div class="album-display-small">
+                                    <h:graphicImage library="images" name="#{albumsJpaController.getAlbumPath(album.albumId, false)}" styleClass="album-img-small"/>
+                                </div>
+                                <br/>
+                                <br/>
+                                <br/>
+                                <br/>
+
+                                <div class="stars">
+                                    <p:rating value="#{customerReviews.rating}"/>
+
+                                </div>
+                                <div class="review-textbox">
+                                    <h:inputTextarea rows = "5" cols = "60"
+                                                     a:placeholder="#{msgs.reviewPlaceHolder}"
+                                                     value="#{customerReviews.review_Text}"/>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div>
+                            <p:commandButton class="rtnTrackbtn" style="margin-right: 10px;" type='submit' value="#{msgs.returnToTrack}"
+                                             action="#{customerReviews.returnToTrackPage()}"/>
+
+                            <p:growl id="messages" showDetail="true"/>
+                            <p:commandButton class="reviewbtn" type="submit" value="#{msgs.addReview}"
+                                             action="#{customerReviews.addCustomerReview()}" update="messages">
+                                <f:ajax render="@form" resetValues="true"/>
+                            </p:commandButton>
+                        </div>
+                    </section>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
